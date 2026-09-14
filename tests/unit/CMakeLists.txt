@@ -1,4 +1,4 @@
-add_executable(unit_tests test_common.cpp)
+add_executable(unit_tests test_common.cpp test_sensor.cpp)
 target_link_libraries(unit_tests PRIVATE rt_common GTest::gtest_main rt_project_warnings)
 
 include(GoogleTest)

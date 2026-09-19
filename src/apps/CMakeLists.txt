@@ -1,1 +1,2 @@
 add_executable(monitor_app main.cpp)
+target_link_libraries(monitor_app PRIVATE rt_common rt_project_warnings)

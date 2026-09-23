@@ -44,6 +44,19 @@ TEST(BoundedQueue, PopOnClosedEmptyQueueReturnsNullopt) {
     EXPECT_FALSE(result.has_value());
 }
 
+TEST(BoundedQueue, DrainsRemainingItemsAfterClose) {
+    BoundedQueue<int> queue(5);
+    queue.push(1);
+    queue.push(2);
+    queue.push(3);
+    queue.close();
+
+    EXPECT_EQ(queue.pop(), std::optional<int>(1));
+    EXPECT_EQ(queue.pop(), std::optional<int>(2));
+    EXPECT_EQ(queue.pop(), std::optional<int>(3));
+    EXPECT_FALSE(queue.pop().has_value());
+}
+
 TEST(BoundedQueue, PopBlocksUntilItemPushedFromAnotherThread) {
     BoundedQueue<int> queue(5);
 

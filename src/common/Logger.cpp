@@ -25,7 +25,8 @@ void Logger::log(LogLevel level, const std::string& message) {
     std::time_t nowTime = std::chrono::system_clock::to_time_t(now);
     std::tm localTime{};
     localtime_r(&nowTime, &localTime);
-    output_ << "[" << std::put_time(&localTime, "%H:%M:%S") << "] "<< levelLabel(level) << ": " << message << "\n";
 
+    std::lock_guard lock(mutex_);
+    output_ << "[" << std::put_time(&localTime, "%H:%M:%S") << "] "<< levelLabel(level) << ": " << message << "\n";
 }
 

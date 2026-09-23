@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <mutex>
 #include <string>
 
 enum class LogLevel {
@@ -17,4 +18,5 @@ public:
 
 private:
     std::ostream& output_;
+    std::mutex mutex_;
 };

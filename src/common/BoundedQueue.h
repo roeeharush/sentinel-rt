@@ -5,11 +5,12 @@
 #include <condition_variable>
 #include <optional>
 #include <cstddef>
+#include <utility>
 
 template <typename T>
 class BoundedQueue {
   public:
-    explicit BoundedQueue(size_t capacity);
+    explicit BoundedQueue(std::size_t capacity);
     void push(T item);
     std::optional<T> pop();
     void close();
@@ -31,7 +32,7 @@ BoundedQueue<T>::BoundedQueue(std::size_t capacity)
 
 template <typename T>
 void BoundedQueue<T>::push(T item) {
-    std::unique_lock<std::mutex> lock(mutex_);
+    std::unique_lock lock(mutex_);
     spaceAvailable_.wait(lock, [this]() {
         return items_.size() < capacity_;
     });
@@ -41,7 +42,7 @@ void BoundedQueue<T>::push(T item) {
 
 template <typename T>
 std::optional<T> BoundedQueue<T>::pop() {
-    std::unique_lock<std::mutex> lock(mutex_);
+    std::unique_lock lock(mutex_);
     itemAvailable_.wait(lock, [this]() {
         return !items_.empty() || closed_;
     });
@@ -58,13 +59,13 @@ std::optional<T> BoundedQueue<T>::pop() {
 
 template <typename T>
 void BoundedQueue<T>::close() {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard lock(mutex_);
     closed_ = true;
     itemAvailable_.notify_all();
 }
 
 template <typename T>
 std::size_t BoundedQueue<T>::size() const {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard lock(mutex_);
     return items_.size();
 }

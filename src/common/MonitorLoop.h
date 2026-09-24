@@ -1,10 +1,10 @@
 #pragma once
 
 #include "common/Device.h"
-#include "common/ThresholdDetector.h"
-#include "common/Logger.h"
-#include "common/StatsCollector.h"
 #include "common/IClock.h"
 #include <chrono>
+#include "common/BoundedQueue.h"
+#include "common/Measurement.h"
 
-void runMonitoringLoop(Device& device, ThresholdDetector& detector, Logger& logger, StatsCollector& stats, IClock& clock,int cycleCount, std::chrono::milliseconds period);
+
+void runMonitoringLoop(Device& device, BoundedQueue<Measurement>& queue, IClock& clock, int cycleCount, std::chrono::milliseconds period);

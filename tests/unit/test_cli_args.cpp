@@ -50,3 +50,57 @@ TEST(CliArgs, RejectsFlagMissingValue) {
 
     EXPECT_FALSE(parseArgs(argc, const_cast<char**>(argv)).has_value());
 }
+
+TEST(CliArgs, DefaultWorkerCountIsPositive) {
+    const char* argv[] = {"monitor_app"};
+    int argc = 1;
+
+    std::optional<AppConfig> config = parseArgs(argc, const_cast<char**>(argv));
+
+    ASSERT_TRUE(config.has_value());
+    EXPECT_GT(config->workers, 0);
+}
+
+TEST(CliArgs, ParsesWorkersFlag) {
+    const char* argv[] = {"monitor_app", "--workers", "6"};
+    int argc = 3;
+
+    std::optional<AppConfig> config = parseArgs(argc, const_cast<char**>(argv));
+
+    ASSERT_TRUE(config.has_value());
+    EXPECT_EQ(config->workers, 6);
+}
+
+TEST(CliArgs, RejectsZeroWorkers) {
+    const char* argv[] = {"monitor_app", "--workers", "0"};
+    int argc = 3;
+
+    EXPECT_FALSE(parseArgs(argc, const_cast<char**>(argv)).has_value());
+}
+
+TEST(CliArgs, DefaultQueueCapacityIsPositive) {
+    const char* argv[] = {"monitor_app"};
+    int argc = 1;
+
+    std::optional<AppConfig> config = parseArgs(argc, const_cast<char**>(argv));
+
+    ASSERT_TRUE(config.has_value());
+    EXPECT_GT(config->queueCapacity, 0);
+}
+
+TEST(CliArgs, ParsesQueueCapacityFlag) {
+    const char* argv[] = {"monitor_app", "--queue-capacity", "25"};
+    int argc = 3;
+
+    std::optional<AppConfig> config = parseArgs(argc, const_cast<char**>(argv));
+
+    ASSERT_TRUE(config.has_value());
+    EXPECT_EQ(config->queueCapacity, 25);
+}
+
+TEST(CliArgs, RejectsZeroQueueCapacity) {
+    const char* argv[] = {"monitor_app", "--queue-capacity", "0"};
+    int argc = 3;
+
+    EXPECT_FALSE(parseArgs(argc, const_cast<char**>(argv)).has_value());
+}

@@ -86,3 +86,47 @@ TEST(BoundedQueue, PushBlocksWhenFullUntilSpaceFreed) {
 
     EXPECT_EQ(queue.size(), 1u);
 }
+
+TEST(BoundedQueue, PushDropOldestAddsItemWhenNotFull) {
+    BoundedQueue<int> queue(3);
+    queue.pushDropOldest(1);
+    queue.pushDropOldest(2);
+
+    EXPECT_EQ(queue.size(), 2u);
+    EXPECT_EQ(*queue.pop(), 1);
+    EXPECT_EQ(*queue.pop(), 2);
+}
+
+TEST(BoundedQueue, PushDropOldestEvictsOldestWhenFull) {
+    BoundedQueue<int> queue(3);
+    queue.pushDropOldest(1);
+    queue.pushDropOldest(2);
+    queue.pushDropOldest(3);
+    queue.pushDropOldest(4);
+
+    EXPECT_EQ(queue.size(), 3u);
+    EXPECT_EQ(*queue.pop(), 2);
+    EXPECT_EQ(*queue.pop(), 3);
+    EXPECT_EQ(*queue.pop(), 4);
+}
+
+TEST(BoundedQueue, PushDropOldestNeverExceedsCapacity) {
+    BoundedQueue<int> queue(2);
+    queue.pushDropOldest(1);
+    queue.pushDropOldest(2);
+    queue.pushDropOldest(3);
+    queue.pushDropOldest(4);
+
+    EXPECT_EQ(queue.size(), 2u);
+}
+
+TEST(BoundedQueue, DroppedCountTracksEvictions) {
+    BoundedQueue<int> queue(2);
+    queue.pushDropOldest(1);
+    queue.pushDropOldest(2);
+    EXPECT_EQ(queue.droppedCount(), 0u);
+
+    queue.pushDropOldest(3);
+    queue.pushDropOldest(4);
+    EXPECT_EQ(queue.droppedCount(), 2u);
+}

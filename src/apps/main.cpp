@@ -28,7 +28,6 @@ namespace {
         }
         return LogLevel::Info;
     }
-
 }
 
 int main(int argc, char* argv[]) {
@@ -47,7 +46,7 @@ int main(int argc, char* argv[]) {
     ThresholdDetector detector(defaultThresholds());
     Logger logger;
     StatsCollector stats(std::chrono::milliseconds(20));
-    BoundedQueue<Measurement> queue(100);
+    BoundedQueue<Measurement> queue(static_cast<std::size_t>(config->queueCapacity));
     RealClock clock;
 
     WorkerPool<Measurement> pool(queue, logger, [&](Measurement measurement) {
@@ -59,10 +58,9 @@ int main(int argc, char* argv[]) {
     if (status != Status::Ok) {
         logger.log(levelForStatus(status), "Measurement outside normal range");
     }
-    }, 4);
+    }, static_cast<std::size_t>(config->workers));
 
-
-    runMonitoringLoop(device, queue, clock, config->cycles, std::chrono::milliseconds(config->periodMs));
+    runMonitoringLoop(device, queue, clock, config->cycles, std::chrono::milliseconds(config->periodMs), config->blockWhenFull);
     queue.close();
     pool.stop();
 
@@ -71,6 +69,7 @@ int main(int argc, char* argv[]) {
               << ", Warning: " << stats.warningCount()
               << ", Critical: " << stats.criticalCount()
               << ", Invalid: " << stats.invalidCount() << std::endl;
+    std::cout << "Dropped: " << queue.droppedCount() << std::endl;
 
     return 0;
 }

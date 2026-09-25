@@ -7,4 +7,4 @@
 #include "common/Measurement.h"
 
 
-void runMonitoringLoop(Device& device, BoundedQueue<Measurement>& queue, IClock& clock, int cycleCount, std::chrono::milliseconds period);
+void runMonitoringLoop(Device& device, BoundedQueue<Measurement>& queue, IClock& clock, int cycleCount, std::chrono::milliseconds period, bool blockWhenFull);

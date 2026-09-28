@@ -48,6 +48,24 @@ bool Socket::sendAll(const std::vector<std::uint8_t>& data) {
     return true;
 }
 
+std::optional<std::vector<std::uint8_t>> Socket::receive(std::size_t maxBytes) {
+    std::vector<std::uint8_t> buffer(maxBytes);
+    while (true) {
+        ssize_t received = recv(fd_, buffer.data(), buffer.size(), 0);
+        if (received < 0) {
+            if (errno == EINTR) {
+                continue;
+            }
+            return std::nullopt;
+        }
+        if (received == 0) {
+            return std::nullopt;
+        }
+        buffer.resize(static_cast<std::size_t>(received));
+        return buffer;
+    }
+}
+
 void ignoreSigPipe() {
     signal(SIGPIPE, SIG_IGN);
 }

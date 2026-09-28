@@ -81,3 +81,35 @@ TEST(FrameReader, ThrowsOnHostileLengthField) {
 
     EXPECT_THROW(reader.tryExtractFrame(), std::runtime_error);
 }
+
+TEST(FrameReader, EncodeFrameProducesBigEndianLengthPrefix) {
+    std::vector<std::uint8_t> payload = {'A', 'B', 'C'};
+
+    std::vector<std::uint8_t> frame = encodeFrame(payload);
+
+    ASSERT_EQ(frame.size(), 4 + payload.size());
+    EXPECT_EQ(std::vector<std::uint8_t>(frame.begin(), frame.begin() + 4), encodeLength(3));
+    EXPECT_EQ(std::vector<std::uint8_t>(frame.begin() + 4, frame.end()), payload);
+}
+
+TEST(FrameReader, EncodeFrameRoundTripsThroughReader) {
+    FrameReader reader;
+    std::vector<std::uint8_t> payload = {'H', 'E', 'L', 'L', 'O'};
+
+    reader.feed(encodeFrame(payload));
+    std::optional<std::vector<std::uint8_t>> frame = reader.tryExtractFrame();
+
+    ASSERT_TRUE(frame.has_value());
+    EXPECT_EQ(*frame, payload);
+}
+
+TEST(FrameReader, EncodeFrameHandlesEmptyPayload) {
+    FrameReader reader;
+    std::vector<std::uint8_t> payload;
+
+    reader.feed(encodeFrame(payload));
+    std::optional<std::vector<std::uint8_t>> frame = reader.tryExtractFrame();
+
+    ASSERT_TRUE(frame.has_value());
+    EXPECT_TRUE(frame->empty());
+}

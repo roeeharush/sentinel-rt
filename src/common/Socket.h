@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <optional>
 #include <vector>
 #include <chrono>
 
@@ -19,6 +20,7 @@ public:
 
     int fd() const;
     bool sendAll(const std::vector<std::uint8_t>& data);
+    std::optional<std::vector<std::uint8_t>> receive(std::size_t maxBytes = 4096);
     void enableAddressReuse();
     void setReceiveTimeout(std::chrono::milliseconds timeout);
 

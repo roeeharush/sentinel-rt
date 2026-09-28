@@ -1,2 +1,8 @@
 add_executable(monitor_app main.cpp)
 target_link_libraries(monitor_app PRIVATE rt_common rt_project_warnings)
+
+add_executable(monitor_server monitor_server_main.cpp)
+target_link_libraries(monitor_server PRIVATE rt_common rt_project_warnings)
+
+add_executable(device_sim device_sim_main.cpp)
+target_link_libraries(device_sim PRIVATE rt_common rt_project_warnings)

@@ -37,3 +37,18 @@ std::optional<std::vector<std::uint8_t>> FrameReader::tryExtractFrame() {
     buffer_.erase(buffer_.begin(), buffer_.begin() + 4 + length);
     return frame;
 }
+
+std::vector<std::uint8_t> encodeFrame(const std::vector<std::uint8_t>& payload) {
+    auto length = static_cast<std::uint32_t>(payload.size());
+
+    std::vector<std::uint8_t> frame;
+    frame.reserve(4 + payload.size());
+
+    frame.push_back(static_cast<std::uint8_t>((length >> 24) & 0xFF));
+    frame.push_back(static_cast<std::uint8_t>((length >> 16) & 0xFF));
+    frame.push_back(static_cast<std::uint8_t>((length >> 8) & 0xFF));
+    frame.push_back(static_cast<std::uint8_t>(length & 0xFF));
+
+    frame.insert(frame.end(), payload.begin(), payload.end());
+    return frame;
+}

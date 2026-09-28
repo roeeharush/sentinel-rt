@@ -4,6 +4,8 @@
 #include <optional>
 #include <vector>
 
+std::vector<std::uint8_t> encodeFrame(const std::vector<std::uint8_t>& payload);
+
 class FrameReader {
 public:
     void feed(const std::vector<std::uint8_t>& data);

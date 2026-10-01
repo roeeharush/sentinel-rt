@@ -1,4 +1,4 @@
-add_executable(unit_tests test_common.cpp test_sensor.cpp test_device.cpp test_threshold_detector.cpp test_logger.cpp test_stats_collector.cpp test_manual_clock.cpp test_monitor_loop.cpp test_cli_args.cpp test_bounded_queue.cpp test_worker_pool.cpp test_frame_reader.cpp test_codec.cpp test_socket.cpp test_connection_handler.cpp test_faulty_sensor.cpp test_sliding_window.cpp test_sliding_window_detector.cpp test_timeout_monitor.cpp)
+add_executable(unit_tests test_common.cpp test_sensor.cpp test_device.cpp test_threshold_detector.cpp test_logger.cpp test_stats_collector.cpp test_manual_clock.cpp test_monitor_loop.cpp test_cli_args.cpp test_bounded_queue.cpp test_worker_pool.cpp test_frame_reader.cpp test_codec.cpp test_socket.cpp test_connection_handler.cpp test_faulty_sensor.cpp test_sliding_window.cpp test_sliding_window_detector.cpp test_timeout_monitor.cpp test_device_sim_args.cpp)
 target_link_libraries(unit_tests PRIVATE rt_common GTest::gtest_main rt_project_warnings)
 
 include(GoogleTest)

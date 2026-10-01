@@ -3,23 +3,31 @@
 #include "common/Logger.h"
 #include "common/Measurement.h"
 #include "common/Socket.h"
+#include "common/SlidingWindowDetector.h"
 #include "common/StatsCollector.h"
 #include "common/ThresholdDetector.h"
+#include "common/TimeoutMonitor.h"
 #include "common/WorkerPool.h"
 
 #include <chrono>
 #include <cstddef>
+#include <cstdint>
 #include <iostream>
 #include <netinet/in.h>
+#include <string>
 #include <sys/socket.h>
 #include <thread>
 #include <utility>
+#include <vector>
 
 namespace {
 
     constexpr std::size_t kQueueCapacity = 1024;
     constexpr std::size_t kWorkerCount = 4;
     constexpr int kListenBacklog = 10;
+    constexpr std::size_t kWindowCapacity = 10;
+    constexpr std::chrono::milliseconds kTimeoutThreshold(2000);
+    constexpr std::chrono::milliseconds kTimeoutCheckInterval(500);
 
     LogLevel levelForStatus(Status status) {
         switch (status) {
@@ -32,6 +40,10 @@ namespace {
                 return LogLevel::Info;
         }
         return LogLevel::Info;
+    }
+
+    Status worse(Status a, Status b) {
+        return static_cast<int>(b) > static_cast<int>(a) ? b : a;
     }
 
 }
@@ -70,12 +82,20 @@ int main() {
     Logger logger;
     StatsCollector stats(std::chrono::milliseconds(20));
     BoundedQueue<Measurement> queue(kQueueCapacity);
+    SlidingWindowDetector windowDetector(kWindowCapacity);
+    TimeoutMonitor timeoutMonitor(kTimeoutThreshold);
 
     WorkerPool<Measurement> pool(queue, logger, [&](Measurement measurement) {
-        auto latency = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - measurement.timestamp);
+        auto now = std::chrono::steady_clock::now();
+        auto latency = std::chrono::duration_cast<std::chrono::nanoseconds>(now - measurement.timestamp);
         stats.recordLatency(latency);
 
-        Status status = detector.evaluate(measurement);
+        timeoutMonitor.recordArrival(measurement.deviceId, now);
+
+        Status thresholdStatus = detector.evaluate(measurement);
+        Status windowStatus = windowDetector.evaluate(measurement);
+        Status status = worse(thresholdStatus, windowStatus);
+
         stats.record(status);
         if (status != Status::Ok) {
             logger.log(levelForStatus(status), "Measurement outside normal range");
@@ -83,6 +103,16 @@ int main() {
             logger.log(LogLevel::Info, "Measurement received");
         }
     }, kWorkerCount);
+
+    std::thread([&timeoutMonitor, &logger]() {
+        while (true) {
+            std::this_thread::sleep_for(kTimeoutCheckInterval);
+            std::vector<std::uint32_t> timedOutDevices = timeoutMonitor.checkTimeouts(std::chrono::steady_clock::now());
+            for (std::uint32_t deviceId : timedOutDevices) {
+                logger.log(LogLevel::Error, "Device " + std::to_string(deviceId) + " timed out");
+            }
+        }
+    }).detach();
 
     std::cout << "Waiting for clients to connect...\n";
 

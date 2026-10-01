@@ -1,6 +1,12 @@
 #include "common/Codec.h"
+#include "common/Device.h"
+#include "common/DeviceSimArgs.h"
+#include "common/FaultySensor.h"
 #include "common/FrameReader.h"
+#include "common/IClock.h"
 #include "common/Measurement.h"
+#include "common/RealClock.h"
+#include "common/Sensor.h"
 #include "common/SensorType.h"
 #include "common/Socket.h"
 
@@ -8,10 +14,12 @@
 #include <chrono>
 #include <cstdint>
 #include <iostream>
+#include <memory>
 #include <netinet/in.h>
 #include <optional>
 #include <sys/socket.h>
 #include <thread>
+#include <vector>
 
 namespace {
 
@@ -46,8 +54,14 @@ namespace {
 
 }
 
-int main() {
+int main(int argc, char* argv[]) {
     ignoreSigPipe();
+
+    std::optional<DeviceSimConfig> config = parseDeviceSimArgs(argc, argv);
+    if (!config) {
+        std::cerr << "Usage: device_sim [--cycles N] [--period-ms N] [--fault TYPE] [--fault-after-ms N]\n";
+        return 1;
+    }
 
     std::optional<Socket> serverSocket = connectWithBackoff("127.0.0.1", 5000);
     if (!serverSocket.has_value()) {
@@ -57,20 +71,44 @@ int main() {
 
     std::cout << "Connected to server!\n";
 
-    Measurement measurement;
-    measurement.deviceId = 1;
-    measurement.sensorType = SensorType::Temperature;
-    measurement.timestamp = std::chrono::steady_clock::now();
-    measurement.value = 73.5;
+    auto temperatureSensor = std::make_unique<FaultySensor>(
+        std::make_unique<Sensor>(SensorType::Temperature, temperatureSpec(), 42), 123);
+    FaultySensor* faultySensorPtr = temperatureSensor.get();
 
-    std::vector<std::uint8_t> frame = encodeFrame(encodeMeasurement(measurement));
+    std::vector<std::unique_ptr<ISensor>> sensors;
+    sensors.push_back(std::move(temperatureSensor));
+    sensors.push_back(std::make_unique<Sensor>(SensorType::Pressure, pressureSpec(), 7));
+    sensors.push_back(std::make_unique<Sensor>(SensorType::Voltage, voltageSpec(), 99));
+    Device device(1, std::move(sensors));
 
-    if (!serverSocket->sendAll(frame)) {
-        std::cerr << "Failed to send measurement\n";
-        return 1;
+    RealClock clock;
+    std::chrono::steady_clock::time_point startTime = clock.now();
+    std::chrono::steady_clock::time_point nextWakeTime = startTime;
+    bool faultActivated = false;
+
+    for (int cycle = 0; cycle < config->cycles; ++cycle) {
+        if (config->fault && !faultActivated) {
+            auto elapsed = clock.now() - startTime;
+            if (elapsed >= config->fault->activateAfter) {
+                faultySensorPtr->setFault(config->fault->type);
+                faultActivated = true;
+            }
+        }
+
+        std::vector<Measurement> measurements = device.sample(clock.now());
+        for (const Measurement& measurement : measurements) {
+            std::vector<std::uint8_t> frame = encodeFrame(encodeMeasurement(measurement));
+            if (!serverSocket->sendAll(frame)) {
+                std::cerr << "Failed to send measurement\n";
+                return 1;
+            }
+        }
+
+        nextWakeTime += std::chrono::milliseconds(config->periodMs);
+        clock.sleepUntil(nextWakeTime);
     }
 
-    std::cout << "Measurement sent\n";
+    std::cout << "Finished " << config->cycles << " cycles.\n";
 
     return 0;
 }

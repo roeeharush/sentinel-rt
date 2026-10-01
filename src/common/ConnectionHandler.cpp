@@ -23,8 +23,6 @@ void ConnectionHandler::run() {
             try {
                 frame = frameReader_.tryExtractFrame();
             } catch (const std::exception& e) {
-                // A hostile length prefix leaves the reader's buffer in a state we can't
-                // safely resynchronize from, so this connection (only) is dropped.
                 logger_.log(LogLevel::Error, std::string("Closing connection after frame error: ") + e.what());
                 return;
             }

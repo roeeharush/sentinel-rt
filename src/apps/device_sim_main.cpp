@@ -40,7 +40,6 @@ namespace {
             if (attempt < kMaxConnectAttempts) {
                 std::this_thread::sleep_for(kRetryDelay);
             }
-            // candidate's fd is closed by its destructor here; the next attempt opens a fresh socket.
         }
         return std::nullopt;
     }

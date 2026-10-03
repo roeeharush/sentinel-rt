@@ -15,16 +15,16 @@ namespace {
         }
     }
 
-    std::optional<FaultType> parseFaultType(const std::string& text) {
-        if (text == "Spike") return FaultType::Spike;
-        if (text == "Drop") return FaultType::Drop;
-        if (text == "Stuck") return FaultType::Stuck;
-        if (text == "Drift") return FaultType::Drift;
-        if (text == "Noise") return FaultType::Noise;
-        if (text == "Invalid") return FaultType::Invalid;
-        return std::nullopt;
-    }
+}
 
+std::optional<FaultType> parseFaultType(const std::string& text) {
+    if (text == "Spike") return FaultType::Spike;
+    if (text == "Drop") return FaultType::Drop;
+    if (text == "Stuck") return FaultType::Stuck;
+    if (text == "Drift") return FaultType::Drift;
+    if (text == "Noise") return FaultType::Noise;
+    if (text == "Invalid") return FaultType::Invalid;
+    return std::nullopt;
 }
 
 std::optional<DeviceSimConfig> parseDeviceSimArgs(int argc, char* argv[]) {

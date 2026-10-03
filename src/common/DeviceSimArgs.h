@@ -3,6 +3,7 @@
 #include "common/FaultType.h"
 #include <chrono>
 #include <optional>
+#include <string>
 
 struct TimedFault {
     FaultType type;
@@ -15,4 +16,5 @@ struct DeviceSimConfig {
     std::optional<TimedFault> fault;
 };
 
+std::optional<FaultType> parseFaultType(const std::string& text);
 std::optional<DeviceSimConfig> parseDeviceSimArgs(int argc, char* argv[]);

@@ -25,7 +25,6 @@ namespace {
     constexpr std::size_t kQueueCapacity = 1024;
     constexpr std::size_t kWorkerCount = 4;
     constexpr int kListenBacklog = 10;
-    constexpr std::size_t kWindowCapacity = 10;
     constexpr std::chrono::milliseconds kTimeoutThreshold(2000);
     constexpr std::chrono::milliseconds kTimeoutCheckInterval(500);
 
@@ -77,7 +76,7 @@ int main() {
     Logger logger;
     StatsCollector stats(std::chrono::milliseconds(20));
     BoundedQueue<Measurement> queue(kQueueCapacity);
-    MeasurementJudge judge(defaultThresholds(), kWindowCapacity);
+    MeasurementJudge judge(defaultThresholds(), kDefaultWindowCapacity);
     TimeoutMonitor timeoutMonitor(kTimeoutThreshold);
 
     WorkerPool<Measurement> pool(queue, logger, [&](Measurement measurement) {

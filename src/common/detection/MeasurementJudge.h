@@ -6,6 +6,8 @@
 #include "common/detection/ThresholdDetector.h"
 #include <cstddef>
 
+constexpr std::size_t kDefaultWindowCapacity = 10;
+
 class MeasurementJudge {
 public:
     MeasurementJudge(ThresholdTable thresholds, std::size_t windowCapacity);

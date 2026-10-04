@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "common/CliArgs.h"
+#include "common/config/CliArgs.h"
 
 TEST(CliArgs, UsesDefaultsWhenNoArgumentsGiven) {
     const char* argv[] = {"monitor_app"};

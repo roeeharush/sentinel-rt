@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "common/Codec.h"
+#include "common/network/Codec.h"
 
 #include <chrono>
 #include <string>

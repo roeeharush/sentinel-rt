@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "common/StatsCollector.h"
+#include "common/infra/StatsCollector.h"
 
 #include <chrono>
 #include <thread>

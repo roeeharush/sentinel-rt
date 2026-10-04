@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "common/Sensor.h"
+#include "common/sensors/Sensor.h"
 
 TEST(Sensor, SameSeedProducesIdenticalFirstReading) {
     Sensor a(SensorType::Temperature, temperatureSpec(), 42);

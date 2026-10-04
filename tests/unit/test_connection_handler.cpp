@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include "common/ConnectionHandler.h"
-#include "common/Codec.h"
-#include "common/FrameReader.h"
+#include "common/network/ConnectionHandler.h"
+#include "common/network/Codec.h"
+#include "common/network/FrameReader.h"
 
 #include <chrono>
 #include <sstream>

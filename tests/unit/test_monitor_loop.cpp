@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
-#include "common/MonitorLoop.h"
-#include "common/Device.h"
-#include "common/Sensor.h"
-#include "common/BoundedQueue.h"
-#include "common/ManualClock.h"
+#include "common/pipeline/MonitorLoop.h"
+#include "common/sensors/Device.h"
+#include "common/sensors/Sensor.h"
+#include "common/pipeline/BoundedQueue.h"
+#include "common/infra/ManualClock.h"
 #include <memory>
 
 TEST(MonitorLoop, AdvancesClockByExactlyCycleCountTimesPeriod) {

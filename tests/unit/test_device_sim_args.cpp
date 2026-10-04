@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "common/DeviceSimArgs.h"
+#include "common/config/DeviceSimArgs.h"
 
 TEST(DeviceSimArgs, UsesDefaultsWhenNoArgumentsGiven) {
     const char* argv[] = {"device_sim"};

@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include "common/WorkerPool.h"
-#include "common/BoundedQueue.h"
-#include "common/Logger.h"
+#include "common/pipeline/WorkerPool.h"
+#include "common/pipeline/BoundedQueue.h"
+#include "common/infra/Logger.h"
 
 #include <algorithm>
 #include <atomic>

@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "common/ScenarioParser.h"
+#include "common/config/ScenarioParser.h"
 #include <sstream>
 
 TEST(ScenarioParser, RejectsEmptyInput) {

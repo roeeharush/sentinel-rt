@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "common/TimeoutMonitor.h"
+#include "common/detection/TimeoutMonitor.h"
 
 TEST(TimeoutMonitor, NoDevicesReportedWhenNoneRecorded) {
     TimeoutMonitor monitor(std::chrono::milliseconds(100));

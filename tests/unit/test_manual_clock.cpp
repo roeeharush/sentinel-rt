@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "common/ManualClock.h"
+#include "common/infra/ManualClock.h"
 
 TEST(ManualClock, StartsAtGivenTime) {
     std::chrono::steady_clock::time_point start{std::chrono::milliseconds(1000)};

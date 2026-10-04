@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "common/BoundedQueue.h"
+#include "common/pipeline/BoundedQueue.h"
 #include <thread>
 
 TEST(BoundedQueue, PushThenPopReturnsSameItem) {

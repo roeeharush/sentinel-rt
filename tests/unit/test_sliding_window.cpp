@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "common/SlidingWindow.h"
+#include "common/detection/SlidingWindow.h"
 
 TEST(SlidingWindow, NotFullWindowNeverReportsStuck) {
     SlidingWindow window(6);

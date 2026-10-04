@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "common/FrameReader.h"
+#include "common/network/FrameReader.h"
 
 #include <cstdint>
 #include <stdexcept>

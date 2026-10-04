@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "common/Device.h"
-#include "common/Sensor.h"
+#include "common/sensors/Device.h"
+#include "common/sensors/Sensor.h"
 #include <memory>
 
 TEST(Device, SampleProducesOneMeasurementPerSensor) {

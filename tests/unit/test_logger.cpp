@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "common/Logger.h"
+#include "common/infra/Logger.h"
 #include <sstream>
 
 TEST(Logger, WritesLevelAndMessage) {

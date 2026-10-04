@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "common/SlidingWindowDetector.h"
+#include "common/detection/SlidingWindowDetector.h"
 
 #include <chrono>
 

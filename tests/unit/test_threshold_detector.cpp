@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "common/ThresholdDetector.h"
+#include "common/detection/ThresholdDetector.h"
 #include <chrono>
 #include <limits>
 

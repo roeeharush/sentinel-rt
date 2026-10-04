@@ -1,13 +1,13 @@
-#include "common/BoundedQueue.h"
-#include "common/ConnectionHandler.h"
-#include "common/Logger.h"
-#include "common/Measurement.h"
-#include "common/Socket.h"
-#include "common/SlidingWindowDetector.h"
-#include "common/StatsCollector.h"
-#include "common/ThresholdDetector.h"
-#include "common/TimeoutMonitor.h"
-#include "common/WorkerPool.h"
+#include "common/pipeline/BoundedQueue.h"
+#include "common/network/ConnectionHandler.h"
+#include "common/infra/Logger.h"
+#include "common/core/Measurement.h"
+#include "common/network/Socket.h"
+#include "common/detection/SlidingWindowDetector.h"
+#include "common/infra/StatsCollector.h"
+#include "common/detection/ThresholdDetector.h"
+#include "common/detection/TimeoutMonitor.h"
+#include "common/pipeline/WorkerPool.h"
 
 #include <chrono>
 #include <cstddef>

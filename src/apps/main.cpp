@@ -1,13 +1,13 @@
-#include "common/CliArgs.h"
-#include "common/Device.h"
-#include "common/Sensor.h"
-#include "common/ThresholdDetector.h"
-#include "common/Logger.h"
-#include "common/StatsCollector.h"
-#include "common/RealClock.h"
-#include "common/MonitorLoop.h"
-#include "common/BoundedQueue.h"
-#include "common/WorkerPool.h"
+#include "common/config/CliArgs.h"
+#include "common/sensors/Device.h"
+#include "common/sensors/Sensor.h"
+#include "common/detection/ThresholdDetector.h"
+#include "common/infra/Logger.h"
+#include "common/infra/StatsCollector.h"
+#include "common/infra/RealClock.h"
+#include "common/pipeline/MonitorLoop.h"
+#include "common/pipeline/BoundedQueue.h"
+#include "common/pipeline/WorkerPool.h"
 
 #include <iostream>
 #include <memory>

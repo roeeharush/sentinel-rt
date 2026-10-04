@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "common/Socket.h"
+#include "common/network/Socket.h"
 
 #include <cerrno>
 #include <chrono>

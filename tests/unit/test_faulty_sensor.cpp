@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "common/FaultySensor.h"
+#include "common/sensors/FaultySensor.h"
 #include <cmath>
 #include <memory>
 

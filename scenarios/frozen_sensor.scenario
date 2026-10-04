@@ -1,0 +1,11 @@
+# The temperature sensor freezes on a healthy value one second in.
+# Every frozen reading is inside the normal range, so the threshold detector alone reports nothing
+# (a healthy run has 0 criticals). Only the sliding window notices, and only once it is full of
+# identical readings: the first critical is cycle 19, so cycles 19..39 give 21 criticals.
+cycles 40
+period_ms 100
+
+at 1000 fault Stuck
+
+expect critical == 21
+expect invalid == 0

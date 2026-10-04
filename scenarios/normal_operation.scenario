@@ -1,0 +1,7 @@
+# No fault injected: a healthy device must never produce a critical or invalid measurement.
+cycles 40
+period_ms 100
+
+expect total == 120
+expect critical == 0
+expect invalid == 0

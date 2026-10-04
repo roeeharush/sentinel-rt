@@ -1,0 +1,9 @@
+# The temperature jumps to five times its value one second in.
+# The threshold detector reports it on the very first faulty cycle: cycles 10..39 are all critical.
+cycles 40
+period_ms 100
+
+at 1000 fault Spike
+
+expect critical == 30
+expect invalid == 0

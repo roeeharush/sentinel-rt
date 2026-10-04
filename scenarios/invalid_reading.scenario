@@ -1,0 +1,8 @@
+# The temperature sensor starts returning NaN one second in: cycles 10..39 are all invalid.
+cycles 40
+period_ms 100
+
+at 1000 fault Invalid
+
+expect invalid == 30
+expect critical == 0

@@ -1,0 +1,11 @@
+# The temperature climbs a little more on every reading. The window reports warnings as soon as the
+# trend is clear, and the threshold detector reports a critical once the value crosses its limit.
+# Counts depend on how the trend meets the thresholds, so these expectations use lower bounds.
+cycles 40
+period_ms 100
+
+at 1000 fault Drift
+
+expect warning >= 35
+expect critical >= 1
+expect invalid == 0

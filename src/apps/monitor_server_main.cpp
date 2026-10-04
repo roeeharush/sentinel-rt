@@ -3,7 +3,7 @@
 #include "common/infra/Logger.h"
 #include "common/core/Measurement.h"
 #include "common/network/Socket.h"
-#include "common/detection/SlidingWindowDetector.h"
+#include "common/detection/MeasurementJudge.h"
 #include "common/infra/StatsCollector.h"
 #include "common/detection/ThresholdDetector.h"
 #include "common/detection/TimeoutMonitor.h"
@@ -42,10 +42,6 @@ namespace {
         return LogLevel::Info;
     }
 
-    Status worse(Status a, Status b) {
-        return static_cast<int>(b) > static_cast<int>(a) ? b : a;
-    }
-
 }
 
 int main() {
@@ -78,11 +74,10 @@ int main() {
 
     std::cout << "Listening on port 5000...\n";
 
-    ThresholdDetector detector(defaultThresholds());
     Logger logger;
     StatsCollector stats(std::chrono::milliseconds(20));
     BoundedQueue<Measurement> queue(kQueueCapacity);
-    SlidingWindowDetector windowDetector(kWindowCapacity);
+    MeasurementJudge judge(defaultThresholds(), kWindowCapacity);
     TimeoutMonitor timeoutMonitor(kTimeoutThreshold);
 
     WorkerPool<Measurement> pool(queue, logger, [&](Measurement measurement) {
@@ -92,9 +87,7 @@ int main() {
 
         timeoutMonitor.recordArrival(measurement.deviceId, now);
 
-        Status thresholdStatus = detector.evaluate(measurement);
-        Status windowStatus = windowDetector.evaluate(measurement);
-        Status status = worse(thresholdStatus, windowStatus);
+        Status status = judge.judge(measurement);
 
         stats.record(status);
         if (status != Status::Ok) {

@@ -23,7 +23,6 @@ namespace {
         if (text == "critical") return Metric::Critical;
         if (text == "invalid") return Metric::Invalid;
         if (text == "total") return Metric::Total;
-        if (text == "deadline_misses") return Metric::DeadlineMisses;
         return std::nullopt;
     }
 

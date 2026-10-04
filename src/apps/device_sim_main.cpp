@@ -1,20 +1,17 @@
 #include "common/network/Codec.h"
-#include "common/sensors/Device.h"
 #include "common/config/DeviceSimArgs.h"
-#include "common/sensors/FaultySensor.h"
+#include "common/sensors/FaultSchedule.h"
 #include "common/network/FrameReader.h"
 #include "common/infra/IClock.h"
 #include "common/core/Measurement.h"
 #include "common/infra/RealClock.h"
-#include "common/sensors/Sensor.h"
-#include "common/core/SensorType.h"
+#include "common/sensors/SimulatedDevice.h"
 #include "common/network/Socket.h"
 
 #include <arpa/inet.h>
 #include <chrono>
 #include <cstdint>
 #include <iostream>
-#include <memory>
 #include <netinet/in.h>
 #include <optional>
 #include <sys/socket.h>
@@ -71,31 +68,20 @@ int main(int argc, char* argv[]) {
 
     std::cout << "Connected to server!\n";
 
-    auto temperatureSensor = std::make_unique<FaultySensor>(
-        std::make_unique<Sensor>(SensorType::Temperature, temperatureSpec(), 42), 123);
-    FaultySensor* faultySensorPtr = temperatureSensor.get();
-
-    std::vector<std::unique_ptr<ISensor>> sensors;
-    sensors.push_back(std::move(temperatureSensor));
-    sensors.push_back(std::make_unique<Sensor>(SensorType::Pressure, pressureSpec(), 7));
-    sensors.push_back(std::make_unique<Sensor>(SensorType::Voltage, voltageSpec(), 99));
-    Device device(1, std::move(sensors));
+    SimulatedDevice simulated = makeSimulatedDevice();
 
     RealClock clock;
     std::chrono::steady_clock::time_point startTime = clock.now();
     std::chrono::steady_clock::time_point nextWakeTime = startTime;
-    bool faultActivated = false;
+    FaultSchedule faultSchedule(config->fault);
 
     for (int cycle = 0; cycle < config->cycles; ++cycle) {
-        if (config->fault && !faultActivated) {
-            auto elapsed = clock.now() - startTime;
-            if (elapsed >= config->fault->activateAfter) {
-                faultySensorPtr->setFault(config->fault->type);
-                faultActivated = true;
-            }
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(clock.now() - startTime);
+        if (auto fault = faultSchedule.due(elapsed)) {
+            simulated.temperature->setFault(*fault);
         }
 
-        std::vector<Measurement> measurements = device.sample(clock.now());
+        std::vector<Measurement> measurements = simulated.device.sample(clock.now());
         for (const Measurement& measurement : measurements) {
             std::vector<std::uint8_t> frame = encodeFrame(encodeMeasurement(measurement));
             if (!serverSocket->sendAll(frame)) {

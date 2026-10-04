@@ -8,8 +8,7 @@ enum class Metric {
     Warning,
     Critical,
     Invalid,
-    Total,
-    DeadlineMisses
+    Total
 };
 
 enum class Comparison {

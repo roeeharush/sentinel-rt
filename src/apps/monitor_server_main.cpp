@@ -7,6 +7,7 @@
 #include "common/infra/StatsCollector.h"
 #include "common/detection/ThresholdDetector.h"
 #include "common/detection/TimeoutMonitor.h"
+#include "common/pipeline/MeasurementProcessor.h"
 #include "common/pipeline/WorkerPool.h"
 
 #include <chrono>
@@ -27,19 +28,6 @@ namespace {
     constexpr int kListenBacklog = 10;
     constexpr std::chrono::milliseconds kTimeoutThreshold(2000);
     constexpr std::chrono::milliseconds kTimeoutCheckInterval(500);
-
-    LogLevel levelForStatus(Status status) {
-        switch (status) {
-            case Status::Warning:
-                return LogLevel::Warning;
-            case Status::Critical:
-            case Status::Invalid:
-                return LogLevel::Error;
-            case Status::Ok:
-                return LogLevel::Info;
-        }
-        return LogLevel::Info;
-    }
 
 }
 
@@ -78,22 +66,10 @@ int main() {
     BoundedQueue<Measurement> queue(kQueueCapacity);
     MeasurementJudge judge(defaultThresholds(), kDefaultWindowCapacity);
     TimeoutMonitor timeoutMonitor(kTimeoutThreshold);
+    MeasurementProcessor processor(judge, stats, timeoutMonitor, logger);
 
     WorkerPool<Measurement> pool(queue, logger, [&](Measurement measurement) {
-        auto now = std::chrono::steady_clock::now();
-        auto latency = std::chrono::duration_cast<std::chrono::nanoseconds>(now - measurement.timestamp);
-        stats.recordLatency(latency);
-
-        timeoutMonitor.recordArrival(measurement.deviceId, now);
-
-        Status status = judge.judge(measurement);
-
-        stats.record(status);
-        if (status != Status::Ok) {
-            logger.log(levelForStatus(status), "Measurement outside normal range");
-        } else {
-            logger.log(LogLevel::Info, "Measurement received");
-        }
+        processor.process(measurement, std::chrono::steady_clock::now());
     }, kWorkerCount);
 
     std::thread([&timeoutMonitor, &logger]() {

@@ -17,6 +17,7 @@
 #include <thread>
 #include <vector>
 #include <algorithm>
+#include <functional>
 
 namespace {
 
@@ -92,18 +93,31 @@ BenchmarkResult runBenchmark(const BenchmarkConfig& config)
     BoundedQueue<Measurement> queue(kQueueCapacity);
     LatencyHistogram totalLatency;
     LatencyHistogram serviceLatency;
+    std::atomic<std::uint64_t> calibrationCount{0};
     std::vector<Device> fleet = makeDeviceFleet(static_cast<std::size_t>(config.devices));
 
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 
-    WorkerPool<Measurement> pool(queue, logger, [&](Measurement measurement) {
-        std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-        processor.process(measurement, begin);
-        std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    std::function<void(Measurement)> handler;
+    if (config.mode == BenchmarkMode::Calibrate)
+    {
+        handler = [&calibrationCount](Measurement) {
+            calibrationCount.fetch_add(1, std::memory_order_relaxed);
+        };
+    }
 
-        serviceLatency.record(end - begin);
-        totalLatency.record(end - measurement.timestamp);
-    }, static_cast<std::size_t>(config.workers));
+    else {
+        handler = [&](Measurement measurement) {
+            std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+            processor.process(measurement, begin);
+            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+            serviceLatency.record(end - begin);
+            totalLatency.record(end - measurement.timestamp);
+        };
+    }
+
+    WorkerPool<Measurement> pool(queue, logger, handler, static_cast<std::size_t>(config.workers));
 
     std::atomic<bool> stop{false};
     FeederStats feederStats;
@@ -144,7 +158,12 @@ BenchmarkResult runBenchmark(const BenchmarkConfig& config)
     result.durationMs = static_cast<std::uint64_t>(elapsedNanos / 1'000'000);
 
     result.sent = feederStats.sent;
-    result.processed = stats.totalCount();
+    if (config.mode == BenchmarkMode::Calibrate){
+        result.processed = calibrationCount.load();
+    }
+    else {
+        result.processed = stats.totalCount();
+    }
     result.maxLag = feederStats.maxLag;
     result.queueMax = queueMax;
     if (queueSamples > 0) {

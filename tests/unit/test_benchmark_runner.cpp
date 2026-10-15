@@ -87,6 +87,27 @@ TEST(BenchmarkRunner, StopsPromptlyEvenWhenTheRequestedRateIsFarAboveCapacity) {
     EXPECT_LE(result.durationMs, kQuickDurationMs + 750);
 }
 
+TEST(BenchmarkRunner, CalibrationCountsEverythingItSends) {
+    BenchmarkResult result = runBenchmark(quickConfig(BenchmarkMode::Calibrate));
+
+    ASSERT_GT(result.sent, 0u);
+    EXPECT_EQ(result.mode, BenchmarkMode::Calibrate);
+    EXPECT_EQ(result.processed, result.sent);
+    EXPECT_GT(result.throughputPerSec, 0u);
+}
+
+TEST(BenchmarkRunner, CalibrationDoesNoRealWorkSoItReportsNoLatency) {
+    BenchmarkResult result = runBenchmark(quickConfig(BenchmarkMode::Calibrate));
+
+    ASSERT_GT(result.processed, 0u);
+    EXPECT_FALSE(result.total.p50Us.has_value());
+    EXPECT_FALSE(result.total.maxUs.has_value());
+    EXPECT_FALSE(result.service.p50Us.has_value());
+    EXPECT_FALSE(result.service.maxUs.has_value());
+    EXPECT_EQ(result.total.overflow, 0u);
+    EXPECT_EQ(result.service.overflow, 0u);
+}
+
 TEST(BenchmarkRunner, TheConfigurationIsEchoedInTheResult) {
     BenchmarkConfig config = quickConfig(BenchmarkMode::Rate);
     config.workers = 3;

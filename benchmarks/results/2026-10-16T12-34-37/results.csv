@@ -1,0 +1,16 @@
+mode,build,workers,devices,target_rate,duration_ms,sent,processed,throughput_per_s,max_lag,queue_avg,queue_max,total_p50_us,total_p95_us,total_p99_us,total_max_us,total_overflow,service_p50_us,service_p95_us,service_p99_us,service_max_us,service_overflow
+calibrate,release,1,10,0,5000,15235899,15235899,3046618,0,51,1024,NA,NA,NA,NA,0,NA,NA,NA,NA,0
+calibrate,release,1,10,0,5000,15091776,15091776,3017751,0,47,1024,NA,NA,NA,NA,0,NA,NA,NA,NA,0
+calibrate,release,1,10,0,5000,17839353,17839353,3567475,0,45,1024,NA,NA,NA,NA,0,NA,NA,NA,NA,0
+calibrate,release,2,10,0,5000,1136340,1136340,227230,0,37,1024,NA,NA,NA,NA,0,NA,NA,NA,NA,0
+calibrate,release,2,10,0,5000,1127622,1127622,225485,0,36,1024,NA,NA,NA,NA,0,NA,NA,NA,NA,0
+calibrate,release,2,10,0,5001,1029372,1029372,205832,0,35,1024,NA,NA,NA,NA,0,NA,NA,NA,NA,0
+calibrate,release,4,10,0,5001,584955,584955,116966,0,5,357,NA,NA,NA,NA,0,NA,NA,NA,NA,0
+calibrate,release,4,10,0,5001,567798,567798,113528,0,5,218,NA,NA,NA,NA,0,NA,NA,NA,NA,0
+calibrate,release,4,10,0,5000,590139,590139,118011,0,5,779,NA,NA,NA,NA,0,NA,NA,NA,NA,0
+calibrate,release,6,10,0,5001,776604,776604,155280,0,4,195,NA,NA,NA,NA,0,NA,NA,NA,NA,0
+calibrate,release,6,10,0,5001,802023,802023,160364,0,5,242,NA,NA,NA,NA,0,NA,NA,NA,NA,0
+calibrate,release,6,10,0,5001,796029,796029,159168,0,4,151,NA,NA,NA,NA,0,NA,NA,NA,NA,0
+calibrate,release,8,10,0,5000,571488,571488,114277,0,3,346,NA,NA,NA,NA,0,NA,NA,NA,NA,0
+calibrate,release,8,10,0,5000,542328,542328,108445,0,3,144,NA,NA,NA,NA,0,NA,NA,NA,NA,0
+calibrate,release,8,10,0,5000,572475,572475,114481,0,3,205,NA,NA,NA,NA,0,NA,NA,NA,NA,0

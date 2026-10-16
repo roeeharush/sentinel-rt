@@ -1,0 +1,6 @@
+mode,build,workers,devices,target_rate,duration_ms,sent,processed,throughput_per_s,max_lag,queue_avg,queue_max,total_p50_us,total_p95_us,total_p99_us,total_max_us,total_overflow,service_p50_us,service_p95_us,service_p99_us,service_max_us,service_overflow
+max,release,2,10,0,10000,1489926,1489926,148979,0,1006,1024,7071,12450,14545,18855,0,1,2,6,3449,0
+max,release,2,10,0,10001,1626960,1626960,162679,0,999,1024,6418,11961,14011,19576,0,1,2,6,1639,0
+max,release,2,10,0,10000,1483308,1483308,148320,0,1009,1024,7008,12411,14426,19902,0,1,2,6,650,0
+max,release,2,10,0,10000,1332399,1332399,133228,0,1010,1024,7943,13050,15170,19702,0,1,2,7,617,0
+max,release,2,10,0,10001,1469526,1469526,146931,0,1002,1024,7185,12136,14285,19840,0,1,2,6,2868,0

@@ -1,0 +1,29 @@
+Voluntary context switches per processed item, before and after the BoundedQueue fix
+Measured 2026-10-16 on AMD Ryzen 5 3500X (6 cores), Ubuntu on WSL2, g++ 15.2.0, Release build.
+
+Method: /usr/bin/time -v <binary> --mode max --workers W --devices 10 --duration-ms 5000 --warmup-ms 1000
+per_item = "Voluntary context switches" (whole process, including the 1 s warm-up) / sent (measured part only).
+The warm-up adds the same bias to every row. 3 runs per point.
+
+before = commit fac2951 (parent of the fix)
+after  = commit fc97c3c (includes the fix: pop() wakes a blocked producer only when size <= capacity/2)
+Command: see the README, Results section ("What was found").
+
+before workers=1 run=1 sent=5563980 throughput_per_s=1112022 voluntary_context_switches=415927 per_item=0.0748
+before workers=1 run=2 sent=5443047 throughput_per_s=1088332 voluntary_context_switches=427110 per_item=0.0785
+before workers=1 run=3 sent=5237190 throughput_per_s=1047141 voluntary_context_switches=408776 per_item=0.0781
+before workers=2 run=1 sent=933306 throughput_per_s=186634 voluntary_context_switches=338827 per_item=0.3630
+before workers=2 run=2 sent=931305 throughput_per_s=186207 voluntary_context_switches=331214 per_item=0.3556
+before workers=2 run=3 sent=849456 throughput_per_s=169851 voluntary_context_switches=336148 per_item=0.3957
+before workers=4 run=1 sent=3538095 throughput_per_s=707399 voluntary_context_switches=492383 per_item=0.1392
+before workers=4 run=2 sent=3077922 throughput_per_s=615385 voluntary_context_switches=485890 per_item=0.1579
+before workers=4 run=3 sent=3628233 throughput_per_s=725516 voluntary_context_switches=490247 per_item=0.1351
+after workers=1 run=1 sent=11382594 throughput_per_s=2275934 voluntary_context_switches=42238 per_item=0.0037
+after workers=1 run=2 sent=11343699 throughput_per_s=2268260 voluntary_context_switches=39001 per_item=0.0034
+after workers=1 run=3 sent=11736660 throughput_per_s=2346754 voluntary_context_switches=43658 per_item=0.0037
+after workers=2 run=1 sent=11276112 throughput_per_s=2254797 voluntary_context_switches=148228 per_item=0.0131
+after workers=2 run=2 sent=11808141 throughput_per_s=2360898 voluntary_context_switches=154783 per_item=0.0131
+after workers=2 run=3 sent=11325978 throughput_per_s=2264650 voluntary_context_switches=142214 per_item=0.0126
+after workers=4 run=1 sent=5128533 throughput_per_s=1025482 voluntary_context_switches=483936 per_item=0.0944
+after workers=4 run=2 sent=5916426 throughput_per_s=1182966 voluntary_context_switches=448995 per_item=0.0759
+after workers=4 run=3 sent=5696985 throughput_per_s=1139220 voluntary_context_switches=460262 per_item=0.0808

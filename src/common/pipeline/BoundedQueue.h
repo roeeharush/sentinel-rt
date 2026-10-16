@@ -67,7 +67,9 @@ std::optional<T> BoundedQueue<T>::pop() {
 
     T item = std::move(items_.front());
     items_.pop_front();
-    spaceAvailable_.notify_one();
+    if (items_.size() <= capacity_ / 2) {
+        spaceAvailable_.notify_one();
+    }
     return item;
 }
 

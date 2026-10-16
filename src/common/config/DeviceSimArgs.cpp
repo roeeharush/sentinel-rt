@@ -49,6 +49,12 @@ std::optional<DeviceSimConfig> parseDeviceSimArgs(int argc, char* argv[]) {
             config.periodMs = *value;
             i += 2;
         }
+        else if (arg == "--device-id" && i + 1 < argc) {
+            std::optional<int> value = parsePositiveInt(argv[i + 1]);
+            if (!value) return std::nullopt;
+            config.deviceId = static_cast<std::uint32_t>(*value);
+            i += 2;
+        }
         else if (arg == "--fault" && i + 1 < argc) {
             faultType = parseFaultType(argv[i + 1]);
             if (!faultType) return std::nullopt;

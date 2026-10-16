@@ -2,6 +2,7 @@
 
 #include "common/core/FaultType.h"
 #include <chrono>
+#include <cstdint>
 #include <optional>
 #include <string>
 
@@ -14,6 +15,7 @@ struct DeviceSimConfig {
     int cycles{};
     int periodMs{};
     std::optional<TimedFault> fault;
+    std::uint32_t deviceId{1};
 };
 
 std::optional<FaultType> parseFaultType(const std::string& text);

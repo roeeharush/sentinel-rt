@@ -96,3 +96,64 @@ TEST(DeviceSimArgs, RejectsNonNumericFaultAfterMs) {
 
     EXPECT_FALSE(parseDeviceSimArgs(argc, const_cast<char**>(argv)).has_value());
 }
+
+TEST(DeviceSimArgs, DeviceIdDefaultsToOne) {
+    const char* argv[] = {"device_sim"};
+    int argc = 1;
+
+    std::optional<DeviceSimConfig> config = parseDeviceSimArgs(argc, const_cast<char**>(argv));
+
+    ASSERT_TRUE(config.has_value());
+    EXPECT_EQ(config->deviceId, 1u);
+}
+
+TEST(DeviceSimArgs, ParsesDeviceIdFlag) {
+    const char* argv[] = {"device_sim", "--device-id", "23"};
+    int argc = 3;
+
+    std::optional<DeviceSimConfig> config = parseDeviceSimArgs(argc, const_cast<char**>(argv));
+
+    ASSERT_TRUE(config.has_value());
+    EXPECT_EQ(config->deviceId, 23u);
+}
+
+TEST(DeviceSimArgs, DeviceIdCombinesWithTheOtherFlags) {
+    const char* argv[] = {"device_sim", "--cycles", "5", "--device-id", "7", "--fault", "Spike"};
+    int argc = 7;
+
+    std::optional<DeviceSimConfig> config = parseDeviceSimArgs(argc, const_cast<char**>(argv));
+
+    ASSERT_TRUE(config.has_value());
+    EXPECT_EQ(config->deviceId, 7u);
+    EXPECT_EQ(config->cycles, 5);
+    ASSERT_TRUE(config->fault.has_value());
+    EXPECT_EQ(config->fault->type, FaultType::Spike);
+}
+
+TEST(DeviceSimArgs, RejectsZeroDeviceId) {
+    const char* argv[] = {"device_sim", "--device-id", "0"};
+    int argc = 3;
+
+    EXPECT_FALSE(parseDeviceSimArgs(argc, const_cast<char**>(argv)).has_value());
+}
+
+TEST(DeviceSimArgs, RejectsNegativeDeviceId) {
+    const char* argv[] = {"device_sim", "--device-id", "-3"};
+    int argc = 3;
+
+    EXPECT_FALSE(parseDeviceSimArgs(argc, const_cast<char**>(argv)).has_value());
+}
+
+TEST(DeviceSimArgs, RejectsNonNumericDeviceId) {
+    const char* argv[] = {"device_sim", "--device-id", "abc"};
+    int argc = 3;
+
+    EXPECT_FALSE(parseDeviceSimArgs(argc, const_cast<char**>(argv)).has_value());
+}
+
+TEST(DeviceSimArgs, RejectsDeviceIdFlagMissingValue) {
+    const char* argv[] = {"device_sim", "--device-id"};
+    int argc = 2;
+
+    EXPECT_FALSE(parseDeviceSimArgs(argc, const_cast<char**>(argv)).has_value());
+}

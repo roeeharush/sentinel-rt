@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
 
     std::optional<DeviceSimConfig> config = parseDeviceSimArgs(argc, argv);
     if (!config) {
-        std::cerr << "Usage: device_sim [--cycles N] [--period-ms N] [--fault TYPE] [--fault-after-ms N]\n";
+        std::cerr << "Usage: device_sim [--cycles N] [--period-ms N] [--device-id N] [--fault TYPE] [--fault-after-ms N]\n";
         return 1;
     }
 
@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
 
     std::cout << "Connected to server!\n";
 
-    SimulatedDevice simulated = makeSimulatedDevice();
+    SimulatedDevice simulated = makeSimulatedDevice(config->deviceId);
 
     RealClock clock;
     std::chrono::steady_clock::time_point startTime = clock.now();

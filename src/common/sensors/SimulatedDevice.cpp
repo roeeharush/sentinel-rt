@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-SimulatedDevice makeSimulatedDevice() {
+SimulatedDevice makeSimulatedDevice(std::uint32_t deviceId) {
     auto temperatureSensor = std::make_unique<FaultySensor>(std::make_unique<Sensor>(SensorType::Temperature, temperatureSpec(), 42), 123);
     FaultySensor* temperature = temperatureSensor.get();
 
@@ -14,5 +14,5 @@ SimulatedDevice makeSimulatedDevice() {
     sensors.push_back(std::make_unique<Sensor>(SensorType::Pressure, pressureSpec(), 7));
     sensors.push_back(std::make_unique<Sensor>(SensorType::Voltage, voltageSpec(), 99));
 
-    return SimulatedDevice{Device(1, std::move(sensors)), temperature};
+    return SimulatedDevice{Device(deviceId, std::move(sensors)), temperature};
 }

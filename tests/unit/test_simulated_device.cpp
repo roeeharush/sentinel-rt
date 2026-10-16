@@ -47,3 +47,24 @@ TEST(SimulatedDevice, TemperatureHandleControlsOnlyTheTemperatureSensor) {
     EXPECT_DOUBLE_EQ(a[1].value, b[1].value);
     EXPECT_DOUBLE_EQ(a[2].value, b[2].value);
 }
+
+TEST(SimulatedDevice, FactoryUsesTheGivenDeviceIdForEverySensor) {
+    SimulatedDevice simulated = makeSimulatedDevice(23);
+
+    std::vector<Measurement> measurements = simulated.device.sample(std::chrono::steady_clock::now());
+
+    ASSERT_EQ(measurements.size(), 3u);
+    for (const Measurement& measurement : measurements) {
+        EXPECT_EQ(measurement.deviceId, 23u);
+    }
+}
+
+TEST(SimulatedDevice, FactoryWithoutArgumentStillUsesDeviceIdOne) {
+    SimulatedDevice simulated = makeSimulatedDevice();
+
+    std::vector<Measurement> measurements = simulated.device.sample(std::chrono::steady_clock::now());
+
+    for (const Measurement& measurement : measurements) {
+        EXPECT_EQ(measurement.deviceId, 1u);
+    }
+}
